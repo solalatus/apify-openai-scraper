@@ -30,6 +30,7 @@
         },
         "openaiApiKey": {
             "title": "OpenAI API Key",
+            "description": "API key to use for execution",
             "type": "string",
             "editor": "textfield",
             "isSecret": true
