@@ -41,7 +41,7 @@ const input = await Actor.getInput() as Input;
 
 if (!input) throw new Error('INPUT cannot be empty!');
 // @ts-ignore
-const openai = await getOpenAIClient(input.openaiApiKey, input.openaiOrganizationId);
+const openai = await getOpenAIClient(input.openaiApiKey, "");
 const modelConfig = validateGPTModel(input.model || DEFAULT_OPENAI_MODEL);
 
 const crawler = new PlaywrightCrawler({
