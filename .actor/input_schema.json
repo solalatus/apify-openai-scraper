@@ -28,7 +28,7 @@
             "editor": "textfield",
             "prefill": "a[href]"
         },
-        "openai_api_key": {
+        "openaiApiKey": {
             "title": "OpenAI API Key",
             "type": "string",
             "editor": "textfield",
@@ -82,5 +82,5 @@
             "editor": "proxy"
         }
     },
-    "required": ["startUrls", "instructions" ]
+    "required": ["startUrls", "instructions", "openaiApiKey"]
 }
