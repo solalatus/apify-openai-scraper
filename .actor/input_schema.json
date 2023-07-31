@@ -28,6 +28,12 @@
             "editor": "textfield",
             "prefill": "a[href]"
         },
+        "openai_api_key": {
+            "title": "OpenAI API Key",
+            "type": "string",
+            "editor": "textfield",
+            "isSecret": true
+        },
         "instructions": {
             "title": "Instructions for GPT",
             "type": "string",
