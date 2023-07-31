@@ -33,15 +33,15 @@ const MERGE_INSTRUCTIONS = `Merge the following text separated by ${MERGE_DOCS_S
 // Initialize the Apify SDK
 await Actor.init();
 
-if (!process.env.OPENAI_API_KEY) {
-    await Actor.fail('OPENAI_API_KEY is not set!');
-}
+//if (!process.env.OPENAI_API_KEY) {
+//    await Actor.fail('OPENAI_API_KEY is not set!');
+//}
 
 const input = await Actor.getInput() as Input;
 
 if (!input) throw new Error('INPUT cannot be empty!');
 // @ts-ignore
-const openai = await getOpenAIClient(process.env.OPENAI_API_KEY, process.env.OPENAI_ORGANIZATION_ID);
+const openai = await getOpenAIClient(input.openai_api_key, input.openai_organization_id);
 const modelConfig = validateGPTModel(input.model || DEFAULT_OPENAI_MODEL);
 
 const crawler = new PlaywrightCrawler({

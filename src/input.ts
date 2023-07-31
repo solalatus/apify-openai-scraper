@@ -7,6 +7,8 @@ export interface Input {
     startUrls: RequestOptions[];
     globs: GlobInput[];
     linkSelector?: string;
+    openai_api_key: string;
+    openai_organization_id?: string;
     instructions: string;
     model?: string;
     targetSelector?: string;
