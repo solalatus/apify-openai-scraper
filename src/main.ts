@@ -70,10 +70,8 @@ async requestHandler({ request, page, enqueueLinks }) {
     log.info(`Opening ${request.url}...`);
 
     // Enqueue links
-    // If maxCrawlingDepth is not set or 0 the depth is infinite.
     const isDepthLimitReached = !!input.maxCrawlingDepth && depth < input.maxCrawlingDepth;
     if (input.linkSelector && input?.globs?.length && !isDepthLimitReached) {
-        // Correct processing of enqueueLinks response
         const enqueueLinksResult = await enqueueLinks({
             selector: input.linkSelector,
             globs: input.globs,
@@ -81,17 +79,18 @@ async requestHandler({ request, page, enqueueLinks }) {
                 depth: depth + 1,
             },
         });
-        
-        // Extract URLs from the requests in the batch
-        const processedRequests = enqueueLinksResult.requests.map(request => request.url);
-        const enqueuedLinks = processedRequests.filter(({ wasAlreadyPresent }) => !wasAlreadyPresent);
+
+        // Assuming enqueueLinksResult returns an object where request objects are in 'data' property
+        const processedRequests = enqueueLinksResult.data?.map((req: { request: { url: string; }; wasAlreadyPresent: boolean; }) => req.request.url) || [];
+
+        // Filter out the already present links
+        const enqueuedLinks = processedRequests.filter((req: { wasAlreadyPresent: boolean; }) => !req.wasAlreadyPresent);
         const alreadyPresentLinksCount = processedRequests.length - enqueuedLinks.length;
         log.info(
             `Page ${request.url} enqueued ${enqueuedLinks.length} new URLs.`,
             { foundLinksCount: enqueuedLinks.length, enqueuedLinksCount: enqueuedLinks.length, alreadyPresentLinksCount },
         );
     }
-
 
         // A function to be evaluated by Playwright within the browser context.
         const originalContentHtml = input.targetSelector
