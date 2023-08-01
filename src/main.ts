@@ -65,28 +65,31 @@ const crawler = new PlaywrightCrawler({
     proxyConfiguration: input.proxyConfiguration && await Actor.createProxyConfiguration(input.proxyConfiguration),
     maxRequestsPerCrawl: input.maxPagesPerCrawl || MAX_REQUESTS_PER_CRAWL,
 
-    async requestHandler({ request, page, enqueueLinks }) {
-        const { depth = 0 } = request.userData;
-        log.info(`Opening ${request.url}...`);
+async requestHandler({ request, page, enqueueLinks }) {
+    const { depth = 0 } = request.userData;
+    log.info(`Opening ${request.url}...`);
 
-        // Enqueue links
-        // If maxCrawlingDepth is not set or 0 the depth is infinite.
-        const isDepthLimitReached = !!input.maxCrawlingDepth && depth < input.maxCrawlingDepth;
-        if (input.linkSelector && input?.globs?.length && !isDepthLimitReached) {
-            const { processedRequests } = await enqueueLinks({
-                selector: input.linkSelector,
-                globs: input.globs,
-                userData: {
-                    depth: depth + 1,
-                },
-            });
-            const enqueuedLinks = processedRequests.filter(({ wasAlreadyPresent }) => !wasAlreadyPresent);
-            const alreadyPresentLinksCount = processedRequests.length - enqueuedLinks.length;
-            log.info(
-                `Page ${request.url} enqueued ${enqueuedLinks.length} new URLs.`,
-                { foundLinksCount: enqueuedLinks.length, enqueuedLinksCount: enqueuedLinks.length, alreadyPresentLinksCount },
-            );
-        }
+    // Enqueue links
+    // If maxCrawlingDepth is not set or 0 the depth is infinite.
+    const isDepthLimitReached = !!input.maxCrawlingDepth && depth < input.maxCrawlingDepth;
+    if (input.linkSelector && input?.globs?.length && !isDepthLimitReached) {
+        // Here is the correction, we extract URLs from the enqueueLinks response
+        const processedRequests = (await enqueueLinks({
+            selector: input.linkSelector,
+            globs: input.globs,
+            userData: {
+                depth: depth + 1,
+            },
+        })).map(req => req.request.url); // <-- Correction is here
+
+        const enqueuedLinks = processedRequests.filter(({ wasAlreadyPresent }) => !wasAlreadyPresent);
+        const alreadyPresentLinksCount = processedRequests.length - enqueuedLinks.length;
+        log.info(
+            `Page ${request.url} enqueued ${enqueuedLinks.length} new URLs.`,
+            { foundLinksCount: enqueuedLinks.length, enqueuedLinksCount: enqueuedLinks.length, alreadyPresentLinksCount },
+        );
+    }
+
 
         // A function to be evaluated by Playwright within the browser context.
         const originalContentHtml = input.targetSelector
