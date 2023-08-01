@@ -73,15 +73,17 @@ async requestHandler({ request, page, enqueueLinks }) {
     // If maxCrawlingDepth is not set or 0 the depth is infinite.
     const isDepthLimitReached = !!input.maxCrawlingDepth && depth < input.maxCrawlingDepth;
     if (input.linkSelector && input?.globs?.length && !isDepthLimitReached) {
-        // Here is the correction, we extract URLs from the enqueueLinks response
-        const processedRequests = (await enqueueLinks({
+        // Correct processing of enqueueLinks response
+        const enqueueLinksResult = await enqueueLinks({
             selector: input.linkSelector,
             globs: input.globs,
             userData: {
                 depth: depth + 1,
             },
-        })).map(req => req.request.url); // <-- Correction is here
-
+        });
+        
+        // Extract URLs from the requests in the batch
+        const processedRequests = enqueueLinksResult.requests.map(request => request.url);
         const enqueuedLinks = processedRequests.filter(({ wasAlreadyPresent }) => !wasAlreadyPresent);
         const alreadyPresentLinksCount = processedRequests.length - enqueuedLinks.length;
         log.info(
