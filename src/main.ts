@@ -237,8 +237,13 @@ const crawler = new PlaywrightCrawler({
     },
 });
 
-//await crawler.run(input.startUrls.map(request => request.url));
-await crawler.run(input.startUrls.map(url => ({ url })));
+// with these lines
+for (let startUrl of input.startUrls) {
+    await crawler.addRequest(startUrl);
+}
+
+// And then start the crawler
+//await crawler.run();
 
 log.info('Configuration completed. Starting the scrape.');
 await crawler.run();
