@@ -239,8 +239,8 @@ const crawler = new PlaywrightCrawler({
 
 for (let startUrl of input.startUrls) {
     try {
-        await crawler.addRequests([{ url: startUrl }]);
-    } catch (error) {
+        await crawler.addRequests([startUrl]); // assuming startUrl is a string
+    } catch (error: any) {
         // Log the error
         console.error(`An error occurred while adding request for url ${startUrl}: ${error.message}`);
         // Continue to the next iteration
