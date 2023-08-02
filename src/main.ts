@@ -239,7 +239,7 @@ const crawler = new PlaywrightCrawler({
 
 // with these lines
 for (let startUrl of input.startUrls) {
-    await crawler.addRequests([{"url": startUrl}]);
+    await crawler.addRequests([startUrl.url]); // assuming startUrl.url is a string
 }
 
 // And then start the crawler
